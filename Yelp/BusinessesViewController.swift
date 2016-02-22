@@ -20,11 +20,31 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         super.viewDidLoad()
         
         
+        self.navigationItem.title = "Yelp"
+        if let navigationBar = navigationController?.navigationBar {
+            //navigationBar.setBackgroundImage(UIImage(named: "filmstrip"), forBarMetrics: .Default)
+            navigationBar.tintColor = UIColor.redColor()
+            
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.redColor().colorWithAlphaComponent(0)
+            shadow.shadowOffset = CGSizeMake(2, 2);
+            shadow.shadowBlurRadius = 2;
+            navigationBar.titleTextAttributes = [
+                // NSFontAttributeName : UIFont.fontNamesForFamilyName("Copperplate"),
+                NSFontAttributeName : UIFont.boldSystemFontOfSize(22),
+                NSForegroundColorAttributeName : UIColor.redColor(),
+                NSShadowAttributeName : shadow
+            ]
+        }
+
+        
+        
         searchBar.sizeToFit()
         navigationItem.titleView = searchBar
 
         tableView.delegate = self
         tableView.dataSource = self
+        searchBar.delegate = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
         // search bar stuff
@@ -32,9 +52,9 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         
         Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
-            self.tableView.reloadData()
             // search bar stuff below
             self.filteredData = self.businesses
+            self.tableView.reloadData()
             for business in businesses {
                 print(business.name!)
                 print(business.address!)
@@ -42,7 +62,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         })
         
       
-        self.tableView.reloadData()
+        
 
 /* Example of Yelp search with more search options specified
         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
@@ -62,8 +82,8 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if filteredData != nil {
-            return filteredData.count
+        if let businesses = filteredData {
+            return businesses.count
             
         } else {
             return 0
@@ -97,7 +117,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("BusinessCell", forIndexPath: indexPath) as! BusinessCell
         
-        print(cell.business = filteredData[indexPath.row])
+     cell.business = filteredData[indexPath.row]
         
         return cell
     }
