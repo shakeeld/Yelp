@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     var businesses: [Business]!
@@ -63,11 +63,31 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if filteredData != nil {
-            return businesses!.count
+            return filteredData.count
             
         } else {
             return 0
         }
+        
+      
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            filteredData = businesses
+        } else {
+            var tempArray = [Business]()
+            
+            for business in businesses! {
+                if(business.name!.lowercaseString.rangeOfString(searchText.lowercaseString) != nil) {
+                    tempArray.append(business)
+                }
+            }
+            
+            filteredData = tempArray
+        }
+        
+        tableView.reloadData()
     }
     
  
@@ -77,28 +97,12 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("BusinessCell", forIndexPath: indexPath) as! BusinessCell
         
-        cell.business = filteredData[indexPath.row]
+        print(cell.business = filteredData[indexPath.row])
         
         return cell
     }
   
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            filteredData = businesses
-        } else {
-            var tempArray = [Business]()
-            
-            for business in businesses! {
-            if(business["name"]!.lowercaseString.rangeOfString(searchText.lowercaseString) != nil) {
-             tempArray.append(business)
-                }
-            }
-            
-            filteredData = tempArray
-        }
-        
-        self.tableView.reloadData()
-    }
+  
 
 
     /*
